@@ -20,7 +20,16 @@ help:
 auth: check-tools
 	@if [ ! -z ${GCP_KEY_FILE} ] && [ -f ${GCP_KEY_FILE} ] ; \
 	then \
-		gcloud auth activate-service-account --key-file ${GCP_KEY_FILE} ; \
+		if [ $$(cat ${GCP_KEY_FILE} | jq -r '.project_id') == ${GCP_PROJECT_ID} ] ; \
+		then \
+			gcloud auth activate-service-account --key-file ${GCP_KEY_FILE} ; \
+		else \
+			echo "${GCP_KEY_FILE} is not valid for GCP project ${GCP_PROJECT_ID}, please check the key file." ; \
+			False ; \
+		fi ; \
+	else \
+		echo "${GCP_KEY_FILE} is not valid, please check the key file." ; \
+		False ; \
 	fi
 
 check-tools:
@@ -50,13 +59,14 @@ config: auth
 		gcloud config configurations create ${GCP_CONFIGURATION} ; \
 	fi ; \
 	gcloud config configurations activate ${GCP_CONFIGURATION} ; \
-	gcloud config set project $$(cat ${GCP_KEY_FILE} | jq -r '.project_id') ; \
+	gcloud config set project ${GCP_PROJECT_ID} ; \
 	gcloud config set compute/zone ${GCP_ZONE} ; \
 	gcloud config set container/cluster ${GCP_CLUSTER_NAME} ; \
 	gcloud config set core/disable_usage_reporting False ;
 
 destroy:
 	# do nothing
-	# should be "logout" ??
+	# should do "logout" ??
 
 .PHONY: all auth check-tools config destroy help 
+
