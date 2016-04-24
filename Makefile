@@ -45,17 +45,15 @@ check-tools:
 	
 # Make sure I am woking on the right project!
 config: auth
-	@if gcloud config configurations list | grep ${GCP_CONFIGURATION} ; \
+	@if ! gcloud config configurations list | grep ${GCP_CONFIGURATION} ; \
 	then \
-		gcloud config configurations activate ${GCP_CONFIGURATION} ; \
-		gcloud config set project $$(cat ${GCP_KEY_FILE} | jq -r '.project_id') ; \
-		gcloud config set compute/zone ${GCP_ZONE} ; \
-		gcloud config set container/cluster ${GCP_CLUSTER_NAME} ; \
-	else \
-		gcloud config configurations list; \
-		echo Configuration "${GCP_CONFIGURATION}" is missing. Please use "gcloud init" to create it. ; \
-		false ; \
-	fi
+		gcloud config configurations create ${GCP_CONFIGURATION} ; \
+	fi ; \
+	gcloud config configurations activate ${GCP_CONFIGURATION} ; \
+	gcloud config set project $$(cat ${GCP_KEY_FILE} | jq -r '.project_id') ; \
+	gcloud config set compute/zone ${GCP_ZONE} ; \
+	gcloud config set container/cluster ${GCP_CLUSTER_NAME} ; \
+	gcloud config set core/disable_usage_reporting False ;
 
 destroy:
 	# do nothing
