@@ -24,11 +24,11 @@ auth: check-tools
 		then \
 			gcloud auth activate-service-account --key-file ${GCP_KEY_FILE} ; \
 		else \
-			echo "${GCP_KEY_FILE} is not valid for GCP project ${GCP_PROJECT_ID}, please check the key file." ; \
+			echo "${GCP_KEY_FILE} is invalid for GCP project ${GCP_PROJECT_ID}, please check the key file." ; \
 			False ; \
 		fi ; \
 	else \
-		echo "${GCP_KEY_FILE} is not valid, please check the key file." ; \
+		echo "${GCP_KEY_FILE} is invalid, please check the key file." ; \
 		False ; \
 	fi
 
